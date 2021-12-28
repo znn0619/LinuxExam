@@ -1,5 +1,4 @@
 import com.google.gson.Gson;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -14,18 +13,13 @@ import java.util.List;
 @WebServlet("/getByIdStudent")
 public class GetByIdStudentServlet extends HttpServlet {
     private Gson gson = new Gson();
-
     private Connection connection = null;
-
     public void init() {
         try {
-            // 自动注册加载
             Class.forName("com.mysql.cj.jdbc.Driver");
-
             String url = "jdbc:mysql://106.12.157.37:3306/linux_final?serverTimezone=GMT";
             String user = "root";
             String password = "83387330Znn!";
-
             connection = DriverManager.getConnection(url, user, password);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -44,9 +38,7 @@ public class GetByIdStudentServlet extends HttpServlet {
         request.setCharacterEncoding("utf-8");
         response.setCharacterEncoding("utf-8");
         response.setContentType("application/json;charset=utf-8");
-
         Student student = getStudentById(Integer.valueOf(request.getParameter("id")));
-
         String json = gson.toJson(student);
         response.getWriter().print(json);
         response.getWriter().close();
@@ -59,30 +51,17 @@ public class GetByIdStudentServlet extends HttpServlet {
         try {
             ps = connection.prepareStatement("select * from student where id = ?");
             ps.setInt(1, id);
-            // 获取结果集
             rs = ps.executeQuery();
-            // 获取结果集元数据
             ResultSetMetaData rsmd = rs.getMetaData();
-            // 获取元数据列数
             int count = rsmd.getColumnCount();
             while (rs.next()) {
                 Student student = new Student();
-                // 处理每行数据
                 for (int i = 0; i < count; i++) {
-                    // 获取属性值
                     Object objValue = rs.getObject(i + 1);
-                    // 获取属性名
                     String columnName = rsmd.getColumnLabel(i + 1);
-
-                    // getColumnName() 获取列名(不推荐)
-                    // getColumnLabel() 获取别名 无别名默认列名
-                    // 通过反射找到私有属性
                     Field field = Student.class.getDeclaredField(columnName);
-                    // 设置访问私有属性
                     field.setAccessible(true);
-                    // 进行赋值
                     field.set(student, objValue);
-
                 }
                 list.add(student);
             }
