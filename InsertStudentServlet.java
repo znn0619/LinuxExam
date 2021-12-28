@@ -1,6 +1,5 @@
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -16,18 +15,13 @@ import java.sql.SQLException;
 @WebServlet("/insertStudent")
 public class InsertStudentServlet extends HttpServlet {
     private Gson gson = new Gson();
-
     private Connection connection = null;
-
     public void init() {
         try {
-            // 自动注册加载
             Class.forName("com.mysql.cj.jdbc.Driver");
-
             String url = "jdbc:mysql://106.12.157.37:3306/linux_final?serverTimezone=GMT";
             String user = "root";
             String password = "83387330Znn!";
-
             connection = DriverManager.getConnection(url, user, password);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -46,11 +40,8 @@ public class InsertStudentServlet extends HttpServlet {
         request.setCharacterEncoding("utf-8");
         response.setCharacterEncoding("utf-8");
         response.setContentType("application/json;charset=utf-8");
-
         Student student = getRequestBody(request);
-
         insertStudent(student);
-
         response.getWriter().print("插入成功");
         response.getWriter().close();
     }
@@ -77,7 +68,6 @@ public class InsertStudentServlet extends HttpServlet {
     private void insertStudent(Student student) {
         PreparedStatement ps = null;
         try {
-            // sql预编译
             ps = connection.prepareStatement("insert into student(name, age) value(?,?)");
             ps.setString(1, student.getName());
             ps.setString(2, student.getAge());
